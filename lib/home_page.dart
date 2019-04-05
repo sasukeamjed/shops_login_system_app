@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'login_page.dart';
+
 
 class Home extends StatelessWidget {
   final String user;
@@ -9,6 +11,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Home Page is build +++++++++++++++++');
     return Scaffold(
       appBar: AppBar(
         title: Text(user),
@@ -28,7 +31,9 @@ class Home extends StatelessWidget {
             ),
             RaisedButton(
               child: Text('Log Out'),
-              onPressed: _signOut,
+              onPressed: (){
+                _signOut(context);
+              },
             ),
           ],
         ),
@@ -36,7 +41,11 @@ class Home extends StatelessWidget {
     );
   }
 
-  void _signOut() async{
+  void _signOut(BuildContext context) async{
     await FirebaseAuth.instance.signOut();
+//    Navigator.pushReplacement(
+//      context,
+//      MaterialPageRoute(builder: (BuildContext context) => LogInPage()),
+//    );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'home_page.dart';
-import 'register_shop.dart';
+enum Condition{
+  logIn,
+  SignUp,
+}
 
 class LogInPage extends StatefulWidget {
   @override
@@ -16,8 +18,11 @@ class _LogInPageState extends State<LogInPage> {
 
   String _userEmail, _password;
 
+  Condition state = Condition.logIn;
+
   @override
   Widget build(BuildContext context) {
+    print('LogIn Page is build +++++++++++++++++');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -82,14 +87,16 @@ class _LogInPageState extends State<LogInPage> {
                 height: 10,
               ),
               RaisedButton(
-                child: Text('Login'),
-                onPressed: _logIn,
+                child: Text(state == Condition.logIn ? 'LogIn' : 'SignUp'),
+                onPressed: state == Condition.logIn ? _logIn : _registerNewUser,
               ),
               FlatButton(
-                child: Text(
-                    'Or Register'),
+                child: Text(state == Condition.logIn ? 'Or Register' : 'Or Login'),
                 onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context)=> RegisterShopPage()));
+                  setState(() {
+                    state = state == Condition.logIn ? Condition.SignUp : Condition.logIn;
+                  });
+//                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context)=> RegisterShopPage()));
                 },
               ),
             ],
@@ -103,14 +110,25 @@ class _LogInPageState extends State<LogInPage> {
     final _formState = _formKey.currentState;
     _formState.save();
     try {
-      FirebaseUser user = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _userEmail, password: _password);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => Home(user.email)),
-      );
+//      Navigator.pushReplacement(
+//        context,
+//        MaterialPageRoute(builder: (BuildContext context) => Home(user.email)),
+//      );
     } catch (e) {
       print(e.message);
+    }
+  }
+
+  _registerNewUser() async {
+    final _formState = _formKey.currentState;
+    _formState.save();
+    try{
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: _userEmail, password: _password);
+    }catch(e){
+      print(e);
     }
   }
 }
